@@ -1,10 +1,9 @@
 class Timer {
   #name;
-  constructor(id, name, countDown) {
-    if (typeof id !== 'string') throw new Error('ID должен быть строкой');
+  constructor(name, countDown) {
     if (typeof name !== 'string') throw new Error('name должен быть строкой');
     if (typeof countDown !== 'number') throw new Error('countDown должен быть числом');
-    this.id = id;
+    this.id = Date.now() + Math.floor(Math.random()*1000);
     this.#name = name;
     this.countDown = countDown;
   }

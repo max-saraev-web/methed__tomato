@@ -2,7 +2,7 @@ import './scss/index.scss';
 import './index.html';
 import Timer from './js/modules/classModules';
 
-const timer = new Timer('Первый', 'Помой машину', 60);
+const timer = new Timer('Помой машину', 60);
 console.log('timer: ', timer);
 
 let count = 0;
