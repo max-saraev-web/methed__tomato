@@ -262,16 +262,19 @@
         "allowTemplateLiterals": true
       }
     ],
-    "require-jsdoc": [
-      "error",
-      {
-        "require": {
-          "FunctionDeclaration": true,
-          "MethodDefinition": true,
-          "ClassDeclaration": true
-        }
-      }
-    ],
+    // "require-jsdoc": [
+    //   "error",
+    //   {
+    //     "require": {
+    //       "FunctionDeclaration": true,
+    //       "MethodDefinition": true,
+    //       "ClassDeclaration": true
+    //     }
+    //   }
+    // ],
+    "rules": {
+      "require-jsdoc": "off"
+    },
     "semi": "error",
     "semi-spacing": "error",
     "space-before-blocks": "error",
