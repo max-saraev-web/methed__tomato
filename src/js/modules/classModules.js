@@ -3,7 +3,7 @@ class Timer {
   constructor(name, countDown) {
     if (typeof name !== 'string') throw new Error('name должен быть строкой');
     if (typeof countDown !== 'number') throw new Error('countDown должен быть числом');
-    this.id = Date.now() + Math.floor(Math.random()*1000);
+    this.id = String(Date.now() + Math.floor(Math.random()*1000));
     this.#name = name;
     this.countDown = countDown;
   }
@@ -15,6 +15,7 @@ class Timer {
     return this.#name;
   }
   set name(newName) {
+    if (typeof newName !== 'string') throw new Error('name должен быть строкой');
     this.#name = newName;
   }
 }

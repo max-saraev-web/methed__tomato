@@ -5,6 +5,7 @@ import Timer from './js/modules/classModules';
 const timer = new Timer('Помой машину', 60);
 console.log('timer: ', timer);
 
+
 let count = 0;
 const imp = ['default', 'important', 'so-so'];
 document.querySelector('.button-importance')
