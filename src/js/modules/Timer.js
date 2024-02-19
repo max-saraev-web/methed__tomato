@@ -1,15 +1,24 @@
 class Timer {
-  #name;
-  constructor(name, countDown) {
+  #name = null;
+  #time = 0;
+  constructor(name, counter = 1, time) {
     if (typeof name !== 'string') throw new Error('name должен быть строкой');
-    if (typeof countDown !== 'number') throw new Error('countDown должен быть числом');
+    if (typeof counter !== 'number') throw new Error('countDown должен быть числом');
     this.id = String(Date.now() + Math.floor(Math.random()*1000));
     this.#name = name;
-    this.countDown = countDown;
+    this.counter = counter;
   }
-  addOne() {
-    this.countDown++;
-    return this;
+  get time() {
+    return this.#time;
+  }
+  set time(time) {
+    this.#time = time;
+  }
+  addOne(id) {
+    if(this.id === id) {
+      this.counter++;
+      return this;
+    }
   }
   get name() {
     return this.#name;

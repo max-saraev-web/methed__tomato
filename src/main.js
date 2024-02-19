@@ -1,10 +1,15 @@
 import './scss/index.scss';
 import './index.html';
-import Timer from './js/modules/classModules';
+import Tomato from './js/modules/tomato';
 
-const timer = new Timer('Помой машину', 60);
-console.log('timer: ', timer);
-
+const tomato = new Tomato({
+  tasks: [
+    'купи слона',
+    'помой бобра'
+  ]
+});
+tomato.init();
+tomato.addTask('Оплати интернет');
 
 let count = 0;
 const imp = ['default', 'important', 'so-so'];
