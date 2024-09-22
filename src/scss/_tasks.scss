@@ -25,6 +25,11 @@
     color: $dark-font;
     border-bottom: 1px solid $window-back-ground;
     padding: 0 15px 0 35px;
+    transition: all 0.5s;
+    &:hover{
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+    }
   }
 
   &__item::after {

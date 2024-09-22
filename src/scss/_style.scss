@@ -76,7 +76,13 @@
 
 .task-form__add-button {
   width: 230px;
+  transition: all 0.5s;
+  &--disabled {
+    filter: grayscale(100%);
+    cursor: not-allowed;  
+  }
 }
+
 
 .pomodoro-tasks {
   display: flex;

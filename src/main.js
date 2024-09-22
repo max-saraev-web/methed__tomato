@@ -1,5 +1,6 @@
 import './scss/index.scss';
 import './index.html';
+import { Tomato } from './scripts/modules/Tomato';
 
 let count = 0;
 const imp = ['default', 'important', 'so-so'];
@@ -18,3 +19,16 @@ document.querySelector('.button-importance')
       }
     }
   });
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  const app = new Tomato({
+    taskDuration: 25,
+    pause: 5,
+    bigPause: 15,
+    tasks: [],
+  });
+  console.log(app);
+  
+  app.init();
+});
