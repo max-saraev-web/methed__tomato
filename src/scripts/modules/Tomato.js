@@ -1,61 +1,35 @@
+import messages from "../messages";
+
 export class Tomato {
   #taskDuration = 25;
   #pause = 5;
   #bigPause = 15;
   #tasks = [];
   #activeTask = null;
-  constructor({taskDuration, pause, bigPause, tasks}) {
+  constructor({taskDuration, pause, bigPause, tasks}, lang) {
     this.#taskDuration = taskDuration;
     this.#pause = pause;
     this.#bigPause = bigPause;
     this.#tasks = tasks;
+    this.lang = lang;
   }
   init() {
     this.addTask();
+    const activeTask = this.isActive()[0];
+    console.log('activeTAask11: ', activeTask);
+    if (activeTask) this.activateTask(activeTask);
+    console.log('она активна????', this.#activeTask);
 
     const tasksList = document.querySelector('.tasks__list');
-    const currentTasks = this.getStorage();
-    console.log('currentTasks: ', currentTasks);
 
-    // ? - начало li
-    for (let i = 0; i < currentTasks.length; i++) {
-      const listElem = document.createElement('li');
-      listElem.classList.add('tasks__item', `${currentTasks[i].importance}`);
-      listElem.dataset.id = currentTasks[i].id;
-
-      const taskCount = document.createElement('span');
-      taskCount.classList.add('count-number');
-      taskCount.textContent = i + 1;
-
-      const btnTask = document.createElement('button');
-      btnTask.classList.add('tasks__text');
-      btnTask.textContent = currentTasks[i][`task-name`];
-
-      const btnBurger = document.createElement('button');
-      btnBurger.classList.add('tasks__button');
-
-      const popUpBtn = document.createElement('div');
-      popUpBtn.classList.add('popup');
-
-      const editBtn = document.createElement('button');
-      editBtn.classList.add('popup__button', 'popup__edit-button');
-      editBtn.textContent = 'Редактировать';
-
-      const delBtn = document.createElement('button');
-      delBtn.classList.add('popup__button', 'popup__delete-button');
-      delBtn.textContent = 'Удалить';
-
-      popUpBtn.append(editBtn, delBtn);
-
-      listElem.append(taskCount, btnTask, btnBurger, popUpBtn);
-      console.log('listElem: ', listElem);
-      
+    if (this.#activeTask) {
+      this.renderWindow(this.#activeTask);
+    } else {
+      this.renderWindow();
     }
-    // ? - конец li
+    this.renderList(tasksList);
+    this.listControl(tasksList);
 
-    tasksList.addEventListener('click', ({target}) => {
-      if (target.matches('.tasks__item')) console.log(target);
-    });
   }
   addStorageTask(arr, task) {
     arr.push(task);
@@ -92,6 +66,8 @@ export class Tomato {
       return elem === 'default' || elem === 'important' || elem === 'so-so';
     }))[0];
     data.id = this.generateId();
+    data.isActive = false;
+    data.count = 0;
     console.log('форма принята');
     this.#tasks.push(data);
     const currentStorage = this.getStorage('tomatoTimer');
@@ -101,6 +77,10 @@ export class Tomato {
     this.setStorage(currentStorage)
     console.log('localStorage', localStorage);
     form.reset();
+
+    // ! - убрать куда-то
+    const tasksList = document.querySelector('.tasks__list');
+    this.renderList(tasksList);
   });
   }
   get tasks() {
@@ -125,7 +105,126 @@ export class Tomato {
   // makeActive() {
     
   // }
-  activateTask(id) {
-    this.#activeTask = id;
+  activateTask(obj) {
+    this.#activeTask = obj;
+  }
+  disableTask() {
+    this.#activeTask = null;
+  }
+  //* - Методы не добавленные в основу!
+  renderWindow(obj = null) {
+    console.log(obj);
+    const {[this.lang]: {noTask, tomato}} = messages;
+
+    const pomodoroWindow = document.querySelector('.pomodoro-form');
+    pomodoroWindow.querySelector('.window__panel').remove();
+
+    const header = document.createElement('div');
+    header.classList.add('window__panel');
+
+    const taskName = document.createElement('p');
+    taskName.classList.add('window__panel-title');
+    taskName.textContent = obj ? obj['task-name'] : noTask;
+
+    const counter = document.createElement('p');
+    counter.classList.add('window__panel-task-text');
+    counter.textContent = `${tomato} ${obj?.count ? obj.count : 1}`;
+
+
+    header.append(taskName, counter);
+
+    pomodoroWindow.prepend(header);
+
+  }
+  renderList(list) {
+    list.textContent = '';
+    for (let i = 0; i < this.#tasks.length; i++) {
+      const listElem = document.createElement('li');
+      listElem.classList.add('tasks__item', `${this.#tasks[i].importance}`);
+      listElem.dataset.id = this.#tasks[i].id;
+
+      const taskCount = document.createElement('span');
+      taskCount.classList.add('count-number');
+      taskCount.textContent = i + 1;
+
+      const btnTask = document.createElement('button');
+      if (this.#tasks[i].isActive === true) {
+        btnTask.classList.add('tasks__text', 'tasks__text_active');
+      } else {
+        btnTask.classList.add('tasks__text');
+      }
+      btnTask.textContent = this.#tasks[i][`task-name`];
+
+      const btnBurger = document.createElement('button');
+      btnBurger.classList.add('tasks__button');
+
+      const popUpBtn = document.createElement('div');
+      popUpBtn.classList.add('popup');
+
+      const editBtn = document.createElement('button');
+      editBtn.classList.add('popup__button', 'popup__edit-button');
+      editBtn.textContent = 'Редактировать';
+
+      const delBtn = document.createElement('button');
+      delBtn.classList.add('popup__button', 'popup__delete-button');
+      delBtn.textContent = 'Удалить';
+
+      popUpBtn.append(editBtn, delBtn);
+
+      listElem.append(taskCount, btnTask, btnBurger, popUpBtn);
+      console.log('listElem: ', listElem);
+      list.append(listElem);
+    }
+  }
+  listControl(list) {
+    const listItems = [...list.querySelectorAll('.tasks__text')];
+
+    list.addEventListener('click', ({target}) => {
+      if (target.matches('.tasks__text')) {
+        listItems.forEach(elem => elem.classList.remove('tasks__text_active'));
+        const id = target.parentElement.dataset.id;
+        target.classList.add('tasks__text_active');
+        this.disableTask();
+        const currentStorage = this.getStorage();
+        console.log('currentStorage: изначальный', currentStorage);
+        currentStorage.forEach((elem, i) => {
+          elem.isActive = false;
+          if (elem.id === id) {
+            currentStorage[i].isActive = true;
+            this.activateTask(currentStorage[i]);
+            console.log(currentStorage[i]);
+          };
+        });
+        console.log('currentStorage: обновлённый', currentStorage);
+        this.setStorage(currentStorage);
+        this.renderWindow(this.#activeTask);
+      };
+      if (target.matches('.tasks__button')) {
+        const clickNum = [...list.querySelectorAll('.tasks__button')].findIndex(elem => elem === target);
+        const popups = [...list.querySelectorAll('.popup')];
+        
+      if (popups[clickNum].classList.contains('popup_active')) {
+        popups[clickNum].classList.remove('popup_active');
+      } else {
+        popups.forEach((elem) => {
+          elem.classList.remove('popup_active');
+        });
+
+        popups[clickNum].classList.add('popup_active');
+      }
+      }
+    });
+
+  }
+  collectTasks() {
+    const savedTasks = this.getStorage();
+    for (const task of savedTasks) {
+      this.#tasks.push(task);
+    }
+  }
+  isActive() {
+    const savedTasks = this.getStorage();
+    console.log('savedTasks: ', savedTasks);
+    return savedTasks.filter(elem => elem.isActive);
   }
 }

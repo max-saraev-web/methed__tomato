@@ -27,8 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     pause: 5,
     bigPause: 15,
     tasks: [],
-  });
-  console.log(app);
+  }, 'ru');
   
+  app.collectTasks();
   app.init();
+  console.log(app);
 });
