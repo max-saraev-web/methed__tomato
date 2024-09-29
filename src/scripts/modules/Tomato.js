@@ -6,6 +6,8 @@ export class Tomato {
   #bigPause = 15;
   #tasks = [];
   #activeTask = null;
+  #timerID;
+  #stepCount = 0;
   constructor({taskDuration, pause, bigPause, tasks}, lang) {
     this.#taskDuration = taskDuration;
     this.#pause = pause;
@@ -16,11 +18,11 @@ export class Tomato {
   init() {
     this.addTask();
     const activeTask = this.isActive()[0];
-    console.log('activeTAask11: ', activeTask);
     if (activeTask) this.activateTask(activeTask);
-    console.log('она активна????', this.#activeTask);
 
     const tasksList = document.querySelector('.tasks__list');
+    const timerWindow = document.querySelector('.window');
+
 
     if (this.#activeTask) {
       this.renderWindow(this.#activeTask);
@@ -30,6 +32,29 @@ export class Tomato {
     this.renderList(tasksList);
     this.listControl(tasksList);
 
+    timerWindow.addEventListener('click', ({target}) => {
+      const {[this.lang]: {timerStart, timerStop}} = messages;
+      const timerTrigger = document.querySelector('.timer-trigger');
+      const timerOutput = timerWindow.querySelector('.window__timer-text');
+
+      // ! - сделать замыкание на нужное время
+      if (target.matches('.timer-trigger') && this.#activeTask) {
+        const {minutes} = this.getTargetTime(this.#stepCount);
+        if (this.#timerID) {
+          target.textContent = timerStart;
+          clearInterval(this.#timerID);
+          this.#timerID = null;
+          timerOutput.textContent = `${minutes}`;
+        } else {
+          this.startTask(this.getTargetTime(this.#stepCount));
+          target.textContent = timerStop;
+        }
+        } 
+      // if (target.matches('.timer-trigger') && this.#isRunnig === true && switcher) {
+      //     console.log('страшно вырубай');
+      //     this.#isRunnig = false; 
+      // }
+    });
   }
   addStorageTask(arr, task) {
     arr.push(task);
@@ -102,18 +127,18 @@ export class Tomato {
     }
     return fullId.join('');
   }
-  // makeActive() {
-    
-  // }
   activateTask(obj) {
     this.#activeTask = obj;
+    const timerTrigger = document.querySelector('.timer-trigger');
+    timerTrigger.style.filter = 'grayscale(0)';
   }
   disableTask() {
     this.#activeTask = null;
   }
-  //* - Методы не добавленные в основу!
   renderWindow(obj = null) {
-    console.log(obj);
+    const timerTrigger = document.querySelector('.timer-trigger');
+    if (!obj) timerTrigger.style.filter = 'grayscale(100%)';
+
     const {[this.lang]: {noTask, tomato}} = messages;
 
     const pomodoroWindow = document.querySelector('.pomodoro-form');
@@ -128,8 +153,11 @@ export class Tomato {
 
     const counter = document.createElement('p');
     counter.classList.add('window__panel-task-text');
+    // ! - проблема что выбрать obj.count или stepCount
     counter.textContent = `${tomato} ${obj?.count ? obj.count : 1}`;
 
+    const timer = document.querySelector('.window__timer-text');
+    timer.textContent = `${this.#taskDuration}:00`
 
     header.append(taskName, counter);
 
@@ -172,7 +200,6 @@ export class Tomato {
       popUpBtn.append(editBtn, delBtn);
 
       listElem.append(taskCount, btnTask, btnBurger, popUpBtn);
-      console.log('listElem: ', listElem);
       list.append(listElem);
     }
   }
@@ -209,7 +236,6 @@ export class Tomato {
         popups.forEach((elem) => {
           elem.classList.remove('popup_active');
         });
-
         popups[clickNum].classList.add('popup_active');
       }
       }
@@ -224,7 +250,67 @@ export class Tomato {
   }
   isActive() {
     const savedTasks = this.getStorage();
-    console.log('savedTasks: ', savedTasks);
     return savedTasks.filter(elem => elem.isActive);
+  }
+
+  getTargetTime(gear) {
+    let targetTime; 
+    let minutes;
+
+    switch(gear) {
+      case 0 :
+      case 2 :
+      case 4 :
+        targetTime = this.#taskDuration * 60 * 1000;
+        minutes = this.#taskDuration;
+        break;
+      case 1 :
+      case 3 :
+        targetTime = this.#pause * 60 * 1000;
+        minutes = this.#pause;
+        break;
+      case 5 :
+        targetTime = this.#bigPause * 60 * 1000;
+        minutes = this.#bigPause;
+        break;
+    }
+    return {targetTime, minutes};
+  }
+  startTask({targetTime, minutes}) {
+    const timeOutput = document.querySelector('.window__timer-text');
+
+    // let remaining = targetTime(this.#stepCount);
+    const stop = Date.now() + targetTime;
+
+    const timerStarter = () => {
+      const dataTime = this.getTimeRemamning(stop);
+      const {minutes, seconds, timeRemaning } = dataTime;
+      console.log(timeRemaning);
+      timeOutput.textContent = `${minutes}:${seconds}`;
+      this.#timerID = setTimeout(timerStarter, 1000)
+      if (timeRemaning <= 0) {
+        if (timeRemaning <= 0 && this.#stepCount === 5) this.#stepCount = 0;
+        console.log(this.#stepCount);
+        this.#stepCount ++;
+        const hoba = this.getTargetTime(this.#stepCount)
+        timeOutput.textContent = `${hoba.minutes}: 00`;
+        console.log(messages);
+        console.log(this.#stepCount);
+        clearTimeout(this.#timerID);
+        };
+    };
+    timerStarter();
+  } 
+  getTimeRemamning(stopTime) {
+    const timeRemaning = stopTime - Date.now();
+
+    const min = Math.floor(timeRemaning / 1000 / 60 % 60) + '';
+    const sec = Math.floor(timeRemaning / 1000 % 60) + '';
+
+    return {
+      minutes: min.padStart(2, 0),
+      seconds: sec.padStart(2, 0),
+      timeRemaning,
+    }
   }
 }
