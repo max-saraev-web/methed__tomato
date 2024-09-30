@@ -5,6 +5,8 @@ const messages = {
     noTask: 'Активной задачи не найденно. Пожалуйста активируйте задачу.',
     timerStart: 'Старт',
     timerStop: 'Стоп',
+    pause: 'Перерыв',
+    bigPause: 'Большой перерыв',
   },
   en: {
     noTask: 'No active task found!',
@@ -12,6 +14,8 @@ const messages = {
     noTask: 'No active task found. Please active a task.',
     timerStart: 'Start',
     timerStop: 'Stop',
+    pause: 'Pause',
+    bigPause: 'Big pause',
   }
 };
 
