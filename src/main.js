@@ -1,10 +1,6 @@
 import './scss/index.scss';
 import './index.html';
-import Timer from './js/modules/classModules';
-
-const timer = new Timer('Помой машину', 60);
-console.log('timer: ', timer);
-
+import Tomato from './js/modules/Tomato';
 
 let count = 0;
 const imp = ['default', 'important', 'so-so'];
@@ -23,3 +19,21 @@ document.querySelector('.button-importance')
       }
     }
   });
+
+  const task = [
+    'написать эссе',
+    'освоить Angular',
+    'Сортировка электронной почты',
+    'Отредактировать лонгрид по лестницам в Тюмени',
+    'уборка кухонного стола'
+  ];
+
+document.addEventListener('DOMContentLoaded', () => {
+  const app = new Tomato({
+    taskDuration: 25,
+    pause: 5,
+    bigPause: 15,
+  });
+  app.startTask();
+  console.log(app);
+});
