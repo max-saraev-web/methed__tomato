@@ -30,10 +30,14 @@ document.querySelector('.button-importance')
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Tomato({
-    taskDuration: 25,
+    taskDuration: 1,
     pause: 5,
     bigPause: 15,
   });
-  app.startTask();
-  console.log(app);
+  app.collectTasks(task);
+  // console.log(app);
+  app.makeRandomTaskActive();
+  const {targetTime} = app.getTargetTime();
+  // console.log('targetTime: ', targetTime);
+  app.startTask(targetTime);
 });
