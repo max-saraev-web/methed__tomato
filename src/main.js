@@ -30,7 +30,7 @@ document.querySelector('.button-importance')
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Tomato({
-    taskDuration: 1,
+    taskDuration: 25,
     pause: 5,
     bigPause: 15,
   });
